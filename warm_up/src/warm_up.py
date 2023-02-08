@@ -1,55 +1,51 @@
+# module imports
+from create_bucket import create_bucket
+from delete_files import delete_files
+from get_buckets import get_buckets
+from get_files import get_files
+from get_file_text import get_file_text
+from load_files import load_files
+# libaries
 import boto3
 import json
 
+import sys
+print(sys.path)
+
 s3 = boto3.client('s3')
 
-BUCKET = 'warm-up-bucket-cl'
+# /home/daniel/Desktop/northcoders/data-engineering/week4-integration/#de-password-manager-two/warm_up/src/utils/create_bucket.py
 
-s3.create_bucket(Bucket=BUCKET)
+b = 'daniels-bucket-northcoders'
+f1 = '../data/northcoders.txt'
+f2 = '../data/methods.txt'
 
-s3_bucket_list = s3.list_buckets()
-s3_bucket_list['Buckets'][0]['Name']
+# create bucket - takes bucket_name
+create_bucket(b)
+# list buckets
+print(get_buckets())
+# load_files - takes file_name and bucket_name
+load_files(f1, b, 'northcoders.txt')
+load_files(f2, b, 'methods.txt')
+# print list of file names
+print(get_files(b))
+# print file text
+print(get_file_text(b, 'northcoders.txt'))
+# delete files - takes bucket name and list of files to delete
+delete_files(b, ['methods.txt', 'northcoders.txt'])
 
-with open('northcoders.txt', 'rb') as file:
-    s3.put_object(Body=file, Bucket=BUCKET, Key='northcoders.txt')
 
-with open('methods.txt', 'rb') as file:
-    s3.put_object(Body=file, Bucket=BUCKET, Key='methods.txt')
-
-uploaded_files = s3.list_objects(Bucket=BUCKET)
-# print(uploaded_files)
-
-uploaded_file_names = uploaded_files['Contents']
-
-file_list = []
-
-for dictionary in uploaded_file_names:
-    file_list.append(dictionary['Key'])
-
-# print(file_list)
-
-file_text = s3.get_object(Bucket=BUCKET, Key='northcoders.txt')['Body'].read()
-
-# print(file_text.decode('utf-8'))
-
-s3.delete_objects(Bucket=BUCKET, Delete={'Objects': [
-    {'Key': 'northcoders.txt'},
-    {'Key': 'methods.txt'}
-]})
-
-# print(s3.list_objects(Bucket=BUCKET))
-
-s3.delete_bucket(Bucket=BUCKET)
-
+# check files are deleted
+print(s3.list_objects(Bucket=b))
+# delete bucket
+s3.delete_bucket(Bucket=b)
+# list buckets
 print(s3.list_buckets()['Buckets'])
 
-# def create_S3_Bucket(bucket_name):
-#    BUCKET = bucket_name
+
+# RESPONSE OBJECT
 #    s3.create_bucket(Bucket=BUCKET)
 #    s3_bucket_list = s3.list_buckets()
 #    return s3_bucket_list['Buckets'][0]['Name']
-
-
 # [{'Name': 'warm-up-bucket-cl', 'CreationDate': datetime.datetime(2023, 2, 8, 14, 45, 33, tzinfo=tzutc())}]
-
 # print(s3_bucket_list['Buckets'])
