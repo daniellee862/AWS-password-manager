@@ -1,0 +1,4 @@
+warm up = 
+1. refactor the last boto3 aws actions
+2. test all util functions with mocks and patchs; from unittest.mock import Mock, patch
+3. read up on moto and add moto to at least one of the tests. 
