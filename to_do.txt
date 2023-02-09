@@ -1,4 +1,57 @@
 warm up = 
 1. refactor the last boto3 aws actions
 2. test all util functions with mocks and patchs; from unittest.mock import Mock, patch
-3. read up on moto and add moto to at least one of the tests. 
+3. read up on moto and add moto to at least one of the tests.
+
+password manager; 
+
+password_manager.py
+
+script that calls AWS actions and uses values input by the user.  
+
+implement error handling and feedback for incorrect user input
+
+
+> Please specify [e]ntry, [r]etrieval, [d]eletion, [l]isting or e[x]it:
+y
+
+list secrets
+e - enter secrets
+    user puts in info to be added as a secret - Secret identifier/UserId/Password
+r - grab secret
+    specify one secret to retrieve
+    stores locally in text file secrets.txt
+d - remove secret
+    specify a secret to delete
+l - list all secrets
+x - exit
+
+
+
+plan:
+import boto3
+client = boto3.client('secretsmanager')
+
+
+e - enter secrets
+    user puts in info to be added as a secret - Secret identifier/UserId/Password
+
+    create secret
+        create_secret()
+            Name='string',
+
+    list secret
+        list_secrets()
+
+    retrieve secret
+        get_secret_value()
+            SecretId='string'
+                The ARN or name of the secret to retrieve.
+
+    delete secret
+        delete_secret()
+            SecretId='string'
+                The ARN or name of the secret to delete.
+                
+all functions need try/except
+and unit testing with mock/patch
