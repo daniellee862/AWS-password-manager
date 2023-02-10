@@ -4,18 +4,20 @@ sm = boto3.client('secretsmanager')
 
 
 def create_secret(secret_name, user_id, password):
-
     user_input_dict = {
         'user_id': user_id,
         'password': password
     }
-
     user_input_to_json = json.dumps(user_input_dict)
 
-    sm.create_secret(
-        Name=secret_name,
-        SecretString=user_input_to_json
-    )
+    try:
+        sm.create_secret(
+            Name=secret_name,
+            SecretString=user_input_to_json
+        )
+    except Exception:
+        return 'error'
+    return 'success'
 
 
 def list_secrets():
