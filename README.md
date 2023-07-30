@@ -1,86 +1,114 @@
-# Using Python To Access AWS 
 
-In this sprint, you will practice using the `boto3` library to manage interactions with AWS infrastructure.
+# 🚀 AWS-Powered Password Manager 🚀
 
-## Task One - Warm Up
-Create a Python script that:
-1. Creates an S3 bucket.
-1. Loads two text files to the bucket.
-1. Prints a listing of the files, saving the filenames in a readable list.
-1. Reads one of the files and prints it to the console.
-1. Deletes the files in the bucket.
-1. Deletes the bucket.
-1. Checks that the bucket is deleted by listing the available buckets (should be none).
+![Python](https://img.shields.io/badge/Python-3.9%2B-blueviolet)
 
-## Task Two - AWS-Powered Password Manager
+![Boto3](https://img.shields.io/badge/Boto3-1.17.0-blue)
 
-In this task, you will create a simple command-line application to store and retrieve passwords. The passwords will be stored in [AWS Secrets Manager](https://aws.amazon.com/secrets-manager/). Accessing your AWS account (with your Access Key Id and Secret Key) will be considered sufficient authorisation to retrieve the passwords.
+![AWS](https://img.shields.io/badge/AWS-Secrets%20Manager-orange)
 
-The application should allow you to:
- - store a user id and password as a secret in `secretsmanager`
- - list all the stored secrets
- - retrieve a secret - the resulting user id and password should not be printed out but should be stored in a file.
- - delete a secret.
+Welcome to the AWS-Powered Password Manager, a command-line application to securely store and retrieve your passwords using AWS Secrets Manager. Say goodbye to forgetting passwords and hello to convenience and security! 😎
 
-The basic workflow should look like this:
+## Getting Started
+
+Before you dive into managing your passwords like a pro, make sure you have the following prerequisites in place:
+
+-  Python 3.9 or above installed on your system.
+-  Boto3 library version 1.17.0 or above.
+-  AWS account credentials with Access Key ID and Secret Key.
+
+## Installation 🛠️
+
+To get started, follow these simple steps:
+
+1. Clone this repository to your local machine.
+2. Install the required libraries using pip:
+
+   ```bash
+   pip install boto3
+   ```
+
+## Usage 💻
+
+In your terminal, navigate to the project directory and run the password_manager.py script :
+
+
+   ```bash
+   $ python password_manager.py
+   ```
+
+You'll be prompted to choose an action from the following options:
+
+-  [e]ntry: Store a new secret.
+-  [r]etrieval: Retrieve a secret and store it in a file.
+-  [d]eletion: Delete a secret.
+-  [l]isting: List all the stored secrets.
+- e[x]it: Exit the password manager.
+
+
+## Example workflow 🔄
+
 ```bash
-awsume sandbox # or whatever means you use to authenticate
-[Sandbox]
-python password_manager.py
-> Please specify [e]ntry, [r]etrieval, [d]eletion, [l]isting or e[x]it:
-y
-> Invalid input. Please specify [e]ntry, [r]etrieval, [d]eletion, [l]isting or e[x]it:
-l
-> 0 secret(s) available
-> Please specify [e]ntry, [r]etrieval, [d]eletion, [l]isting or e[x]it:
-e
+> Please specify [e]ntry, [r]etrieval, [d]eletion, [l]isting, or e[x]it:
+
 > Secret identifier: 
-Missile_Launch_Codes
+Fortnite_Password 
 > UserId:
-bidenj
+username123
 > Password:
-Pa55word
+P@ssw0rd!
 > Secret saved.
-> Please specify [e]ntry, [r]etrieval, [d]eletion, [l]isting or e[x]it:
+
+> Please specify [e]ntry, [r]etrieval, [d]eletion, [l]isting, or e[x]it:
 l
 > 1 secret(s) available
-  Missile_Launch_Codes
-> Please specify [e]ntry, [r]etrieval, [d]eletion, [l]isting or e[x]it:
+Fortnite_Password 
+
+> Please specify [e]ntry, [r]etrieval, [d]eletion, [l]isting, or e[x]it:
 r
 > Specify secret to retrieve:
-Missile_Launch_Codes
+Fortnite_Password 
 > Secrets stored in local file secrets.txt
-> Please specify [e]ntry, [r]etrieval, [d]eletion, [l]isting or e[x]it:
+
+> Please specify [e]ntry, [r]etrieval, [d]eletion, [l]isting, or e[x]it:
 d
 > Specify secret to delete:
-Missile_Launch_Codes
+Fortnite_Password 
 > Deleted
-> Please specify [e]ntry, [r]etrieval, [d]eletion, [l]isting or e[x]it:
+
+> Please specify [e]ntry, [r]etrieval, [d]eletion, [l]isting, or e[x]it:
 x
 > Thank you. Goodbye.
-
-# In the shell:
-cat secrets.txt
-UserId: bidenj
-Password: Pa55word
 ```
 
- - Ensure that your code is thoroughly unit-tested. Use mocks if you need to. (Use of the `moto` library to mock `secretsmanager` is encouraged but not required.)
- - Ensure that you use `try...except` to manage potential errors. Input errors or `boto3` client errors should be handled "gracefully" - ie the user should get some informative response and the application should continue running. For example:
- ```
-> Please specify [e]ntry, [r]etrieval, [d]eletion, [l]isting or e[x]it:
-l
-> 1 secret(s) available
-  Missile_Launch_Codes
-> Please specify [e]ntry, [r]etrieval, [d]eletion, [l]isting or e[x]it:
-r
-> Specify secret to retrieve:
-Fortnite_Password
-> That is not a valid secret.
-> Please specify [e]ntry, [r]etrieval, [d]eletion, [l]isting or e[x]it:
-...
+## Testing 🧪 
+
+To ensure the functionality of the password manager, thorough testing is performed using the pytest framework and the unittest.mock module. The src/functions.py module contains the core functions used for interaction with AWS Secrets Manager.
+
+```python
+
+from src.functions import create_secret, list_secrets, retrieve_secret, delete_secret
+from unittest.mock import patch
+import json
+import boto3
+import pytest
+
+# CREATE SECRET
+
+@pytest.fixture
+def sm_client():
+    return boto3.client('secretsmanager')
+
+def test_create_secret(sm_client, mocker):
+    mock_create_secret = mocker.patch.object(sm_client, 'create_secret')
+    secret_name = 'test_secret'
+    user_id = 'test_user'
+    password = 'test_password'
+    result = create_secret(secret_name, user_id, password)
+
+    mock_create_secret.assert_called_once_with(
+        Name=secret_name,
+        SecretString=json.dumps({'user_id': user_id, 'password': password})
+    )
+    assert result == 'success'
 ```
-
- There are many enhancements you could make. Feel free to increase the sophistication of the interface.
-
-
